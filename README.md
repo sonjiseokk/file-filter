@@ -46,7 +46,7 @@
 **요청 모델**
 ``` json
 {
-	"extension" : "jpg"
+ "extension" : "jpg"
 }
 ```
 
@@ -106,34 +106,34 @@
 차단 확장자의 목록을 조회합니다.
 
 **응답 모델 (성공 - 200 OK)**
-``` json
+```json
 {
  "success": true,
  "data": {
    "defaultExtensions": [
-	   {
-		   "extension" : "bat"
-		   "checked" : false
-	   }, 
-	   {
-		   "extension" : "cmd"
-		   "checked" : true
-	   }, 
-	   {
-		   "extension" : "com"
-		   "checked" : true
-	   }, 
-	   {
-		   "extension" : "cpl"
-		   "checked" : false
-	   }, 
-	   {
-		   "extension" : "exe"
-		   "checked" : true
-	   }, 
+     {
+       "extension" : "bat",
+       "checked" : false
+     }, 
+     {
+       "extension" : "cmd",
+       "checked" : true
+     }, 
+     {
+       "extension" : "com",
+       "checked" : true
+     }, 
+     {
+       "extension" : "cpl",
+       "checked" : false
+     }, 
+     {
+       "extension" : "exe",
+       "checked" : true
+     } 
    ],
    "customExtensions": [
-	   "doc", "docx", "pdf", "hwp"
+     "doc", "docx", "pdf", "hwp"
    ]
  },
  "message": "모든 차단 확장자 목록을 성공적으로 조회했습니다."
@@ -162,9 +162,9 @@
 {
  "success": true,
  "data": {
-	 "name" : "test.txt",
-	 "extension" : "txt",
-	 "created_at" : "2025-07-24T15:30:00Z"
+   "name" : "test.txt",
+   "extension" : "txt",
+   "created_at" : "2025-07-24T15:30:00Z"
  },
  "message": "파일을 성공적으로 업로드하였습니다."
 }
