@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Getter
 public class BlockedExtension {
     @Id
-    @Column(unique = true, nullable = false)
+    @Column(unique = true, nullable = false, length = 20)
     private String extension;
 
     // 소프트 삭제

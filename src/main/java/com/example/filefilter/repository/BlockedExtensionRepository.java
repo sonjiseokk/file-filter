@@ -19,4 +19,7 @@ public interface BlockedExtensionRepository extends JpaRepository<BlockedExtensi
     @Query("SELECT b FROM BlockedExtension b WHERE b.extension NOT IN :extensions")
     List<BlockedExtension> findCustoms(List<String> extensions);
 
+    @Query("SELECT count(b) FROM BlockedExtension b WHERE b.deleted = false AND b.extension NOT IN :defaultExtensions")
+    long countCustomExtensions(@Param("defaultExtensions") List<String> defaultExtensions);
+
 }

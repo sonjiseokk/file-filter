@@ -7,5 +7,5 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ExtensionDto {
     private final String extension;
-    private final boolean isDefault;
+    private final boolean checked;
 }

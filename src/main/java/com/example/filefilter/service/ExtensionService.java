@@ -3,8 +3,10 @@ package com.example.filefilter.service;
 import com.example.filefilter.entity.BlockedExtension;
 import com.example.filefilter.entity.ExtensionType;
 import com.example.filefilter.entity.dto.ExtensionDto;
+import com.example.filefilter.exception.CustomExtensionLimitException;
 import com.example.filefilter.repository.BlockedExtensionRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +19,9 @@ import java.util.Optional;
 public class ExtensionService {
 
     private final BlockedExtensionRepository repository;
+
+    @Value("${app.extension.custom-limit}")
+    private int customLimit;
 
     @Transactional
     public void toggleDefaultExtension(String extension) {
@@ -48,25 +53,27 @@ public class ExtensionService {
         Optional<BlockedExtension> existingOpt = repository.findByExtension(extension);
 
         // 2. 등록 된 적이 없는 확장자명의 경우
-        if (existingOpt.isEmpty()) {
-            // 생성 후 저장
+        if (existingOpt.isPresent()) {
+            BlockedExtension existing = existingOpt.get();
+            if (existing.isDeleted()) {
+                // 복구 시 개수 제한 확인
+                checkCustomExtensionLimit();
+                existing.restore();
+                repository.save(existing);
+            } else {
+                // 이미 등록된 경우
+                throw new IllegalStateException("이미 등록된 확장자입니다.");
+            }
+        } else {
+            // 3. 한번 등록된 적이 있지만 현재는 삭제된 확장자명
+            // 신규 등록 시 개수 제한 확인
+            checkCustomExtensionLimit();
             BlockedExtension newExtension = BlockedExtension.create(extension);
             repository.save(newExtension);
         }
-
-        BlockedExtension existing = existingOpt.get();
-
-        // 3. 한번 등록된 적이 있지만 현재는 삭제된 확장자명
-        if (existing.isDeleted()) {
-            // 복구 및 명시적 세이브
-            existing.restore();
-            repository.save(existing);
-        } else {
-            // 4. 이미 등록되어있고, 중복 시도인 경우
-            throw new IllegalStateException("이미 등록된 확장자입니다.");
-        }
     }
 
+    @Transactional
     public void delete(String extension) {
         BlockedExtension ext = repository.findByExtensionAndDeletedFalse(extension)
                 .orElseThrow(() -> new IllegalArgumentException("저장되지 않는 확장자입니다."));
@@ -79,7 +86,7 @@ public class ExtensionService {
         List<BlockedExtension> customExtensions = repository.findCustoms(ExtensionType.DEFAULT.getExtensions());
 
         return customExtensions.stream()
-                .map(e -> new ExtensionDto(e.getExtension().toLowerCase(), e.isDeleted()))
+                .map(e -> new ExtensionDto(e.getExtension().toLowerCase(), !e.isDeleted()))
                 .toList();
     }
 
@@ -87,13 +94,20 @@ public class ExtensionService {
         List<BlockedExtension> defaultExtensions = repository.findDefaults(ExtensionType.DEFAULT.getExtensions());
 
         return defaultExtensions.stream()
-                .map(e -> new ExtensionDto(e.getExtension().toLowerCase(), e.isDeleted()))
+                .map(e -> new ExtensionDto(e.getExtension().toLowerCase(), !e.isDeleted()))
                 .toList();
     }
 
     public boolean isBlocked(String extension) {
         return repository.findByExtensionAndDeletedFalse(extension)
                 .isPresent();
+    }
+
+    private void checkCustomExtensionLimit() {
+        long currentCount = repository.countCustomExtensions(ExtensionType.DEFAULT.getExtensions());
+        if (currentCount >= customLimit) {
+            throw new CustomExtensionLimitException("커스텀 확장자는 최대 " + customLimit + "개까지만 등록할 수 있습니다.");
+        }
     }
 }
 
