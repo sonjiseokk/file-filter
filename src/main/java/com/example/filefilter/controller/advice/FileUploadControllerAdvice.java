@@ -3,12 +3,14 @@ package com.example.filefilter.controller.advice;
 import com.example.filefilter.controller.dto.ApiResponse;
 import com.example.filefilter.exception.CustomExtensionLimitException;
 import com.example.filefilter.exception.FileUploadException;
+import org.apache.tomcat.util.http.fileupload.impl.SizeLimitExceededException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MultipartException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -62,4 +64,13 @@ public class FileUploadControllerAdvice {
                 .status(HttpStatus.BAD_REQUEST)
                 .body(ApiResponse.error(errorMessage));
     }
+
+    @ExceptionHandler(MultipartException.class)
+    public ResponseEntity<ApiResponse<?>> handleMultipartException(MultipartException ex) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.error("파일 저장 용량을 초과하였습니다. (최대 10MB)"));
+    }
+
+
 }
