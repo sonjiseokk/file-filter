@@ -7,6 +7,8 @@ import com.example.filefilter.entity.dto.ExtensionDto;
 import com.example.filefilter.exception.CustomExtensionLimitException;
 import com.example.filefilter.repository.BlockedExtensionHistoryRepository;
 import com.example.filefilter.repository.BlockedExtensionRepository;
+import com.example.filefilter.util.FileNameParser;
+import com.example.filefilter.util.FileNameSanitizer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -54,8 +56,16 @@ public class ExtensionService {
             throw new IllegalArgumentException("디폴트 확장자명은 등록할 수 없습니다.");
         }
 
+        // 유니코드 공백 제거
+        String clean = FileNameSanitizer.clean(extension);
+
+        // 앞뒤 공백 제거 후 문자열이 비어있거나 중간에 공백이 존재하면 예외
+        if (clean.isBlank() || clean.contains(" ")) {
+            throw new IllegalArgumentException("공백이 포함된 확장자는 등록할 수 없습니다.");
+        }
+
         // 1. 커스텀 확장자명 조회
-        Optional<BlockedExtension> existingOpt = repository.findByExtension(extension);
+        Optional<BlockedExtension> existingOpt = repository.findByExtension(clean);
 
         // 2. 등록 된 적이 없는 확장자명의 경우
         if (existingOpt.isPresent()) {
@@ -73,7 +83,7 @@ public class ExtensionService {
             // 3. 한번 등록된 적이 있지만 현재는 삭제된 확장자명
             // 신규 등록 시 개수 제한 확인
             checkCustomExtensionLimit();
-            BlockedExtension newExtension = BlockedExtension.create(extension);
+            BlockedExtension newExtension = BlockedExtension.create(clean);
             repository.save(newExtension);
         }
     }

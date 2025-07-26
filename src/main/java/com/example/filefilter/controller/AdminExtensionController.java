@@ -5,6 +5,7 @@ import com.example.filefilter.controller.dto.ExtensionListResponse;
 import com.example.filefilter.controller.dto.ExtensionRequest;
 import com.example.filefilter.entity.dto.ExtensionDto;
 import com.example.filefilter.service.ExtensionService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +20,7 @@ public class AdminExtensionController {
     private final ExtensionService extensionService;
 
     @PostMapping("/custom")
-    public ResponseEntity<ApiResponse<?>> addBlockExtension(@RequestBody ExtensionRequest request) {
+    public ResponseEntity<ApiResponse<?>> addBlockExtension(@RequestBody @Valid ExtensionRequest request) {
         extensionService.customRegisterOrRestore(request.getExtension());
 
         return ResponseEntity.status(HttpStatus.CREATED)
