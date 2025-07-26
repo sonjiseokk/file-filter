@@ -10,5 +10,5 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ExtensionListResponse {
     private final List<ExtensionDto> defaultExtensions;
-    private final List<ExtensionDto> customExtensions;
+    private final List<String> customExtensions;
 }

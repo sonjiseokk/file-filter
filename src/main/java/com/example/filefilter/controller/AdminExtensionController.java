@@ -47,7 +47,7 @@ public class AdminExtensionController {
     @GetMapping()
     public ResponseEntity<ApiResponse<?>> listBlockExtensions() {
         List<ExtensionDto> defaultExtensions = extensionService.getDefaultExtensions();
-        List<ExtensionDto> customExtensions = extensionService.getCustomExtensions();
+        List<String> customExtensions = extensionService.getCustomExtensions();
 
         ExtensionListResponse response = new ExtensionListResponse(defaultExtensions, customExtensions);
 

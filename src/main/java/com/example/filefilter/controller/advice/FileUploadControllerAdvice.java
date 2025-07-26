@@ -23,7 +23,7 @@ public class FileUploadControllerAdvice {
         field.put("message", ex.getMessage());
 
         return ResponseEntity
-                .status(HttpStatus.FORBIDDEN)
+                .status(HttpStatus.BAD_REQUEST)
                 .body(field);
     }
 
