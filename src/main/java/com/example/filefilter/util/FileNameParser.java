@@ -3,6 +3,7 @@ package com.example.filefilter.util;
 import org.springframework.stereotype.Component;
 
 import java.text.Normalizer;
+import java.util.Arrays;
 
 @Component
 public class FileNameParser {
@@ -15,17 +16,23 @@ public class FileNameParser {
         }
     }
 
+    public static String getFullExtension(String filename) {
+        if (filename == null || filename.isBlank()) return "";
+
+        String name = getName(filename);
+        String[] parts = name.split("\\.");
+
+        if (parts.length <= 1) return "";
+        return String.join(".", Arrays.copyOfRange(parts, 1, parts.length));
+    }
+
+
     public static int indexOfExtension(String filename) {
         if (filename == null) {
             return -1;
         } else {
             int extensionPos = filename.lastIndexOf(46);
             int lastSeparator = indexOfLastSeparator(filename);
-
-            // 파일명이 '.' 으로 시작하는 숨김파일인 경우 제외
-            if (extensionPos == 0) {
-                return -1;
-            }
 
             return lastSeparator > extensionPos ? -1 : extensionPos;
         }

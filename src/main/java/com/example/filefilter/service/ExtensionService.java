@@ -116,8 +116,7 @@ public class ExtensionService {
     }
 
     public boolean isBlocked(String extension) {
-        return repository.findByExtensionAndDeletedFalse(extension)
-                .isPresent();
+        return repository.findByExtensionAndDeletedFalse(extension).isPresent();
     }
 
     private void checkCustomExtensionLimit() {
