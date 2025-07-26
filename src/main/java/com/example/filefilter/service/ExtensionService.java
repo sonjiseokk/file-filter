@@ -3,6 +3,7 @@ package com.example.filefilter.service;
 import com.example.filefilter.entity.BlockedExtension;
 import com.example.filefilter.entity.BlockedExtensionHistory;
 import com.example.filefilter.entity.ExtensionType;
+import com.example.filefilter.entity.dto.BlockedExtensionHistoryDto;
 import com.example.filefilter.entity.dto.ExtensionDto;
 import com.example.filefilter.exception.CustomExtensionLimitException;
 import com.example.filefilter.repository.BlockedExtensionHistoryRepository;
@@ -124,6 +125,15 @@ public class ExtensionService {
         if (currentCount >= customLimit) {
             throw new CustomExtensionLimitException("커스텀 확장자는 최대 " + customLimit + "개까지만 등록할 수 있습니다.");
         }
+    }
+
+    public List<BlockedExtensionHistoryDto> getHistories() {
+        // 시간상 페이징은 미구현
+        List<BlockedExtensionHistory> entities = historyRepository.findAllWithExtension();
+
+        return entities.stream()
+                .map(e -> new BlockedExtensionHistoryDto(e.getBlockedExtension().getExtension(), e.getDeletedAt()))
+                .toList();
     }
 }
 

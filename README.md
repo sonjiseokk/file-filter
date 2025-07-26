@@ -140,6 +140,29 @@
 }
 ```
 
+### 차단 해제 이력 조회
+**GET /api/admin/extensions/history**
+
+확장자를 차단 해제한 이력을 조회합니다.
+
+**응답 모델 (성공 - 200 OK)**
+```json
+{
+ "success": true,
+ "data": [
+   {
+    "extension": "txt", 
+    "deletedAt": "2025-07-26T01:06:18.773796"
+   }, 
+   {
+     "extension": "txt",
+     "deletedAt": "2025-07-26T01:06:37.128656"
+   }
+ ], 
+  "message": "요청이 성공적으로 처리되었습니다."
+}
+```
+
 ## 파일 저장 API
 
 ### 파일 업로드 API

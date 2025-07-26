@@ -3,6 +3,7 @@ package com.example.filefilter.controller;
 import com.example.filefilter.controller.dto.ApiResponse;
 import com.example.filefilter.controller.dto.ExtensionListResponse;
 import com.example.filefilter.controller.dto.ExtensionRequest;
+import com.example.filefilter.entity.dto.BlockedExtensionHistoryDto;
 import com.example.filefilter.entity.dto.ExtensionDto;
 import com.example.filefilter.service.ExtensionService;
 import jakarta.validation.Valid;
@@ -54,6 +55,15 @@ public class AdminExtensionController {
 
         return ResponseEntity.ok(
                 ApiResponse.success(response, "모든 차단 확장자 목록을 성공적으로 조회했습니다.")
+        );
+    }
+
+    @GetMapping("/history")
+    public ResponseEntity<ApiResponse<?>> listExtensionHistory() {
+        List<BlockedExtensionHistoryDto> response = extensionService.getHistories();
+
+        return ResponseEntity.ok(
+                ApiResponse.success(response)
         );
     }
 }
