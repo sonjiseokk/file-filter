@@ -1,9 +1,11 @@
 package com.example.filefilter.service;
 
 import com.example.filefilter.entity.BlockedExtension;
+import com.example.filefilter.entity.BlockedExtensionHistory;
 import com.example.filefilter.entity.ExtensionType;
 import com.example.filefilter.entity.dto.ExtensionDto;
 import com.example.filefilter.exception.CustomExtensionLimitException;
+import com.example.filefilter.repository.BlockedExtensionHistoryRepository;
 import com.example.filefilter.repository.BlockedExtensionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,6 +21,7 @@ import java.util.Optional;
 public class ExtensionService {
 
     private final BlockedExtensionRepository repository;
+    private final BlockedExtensionHistoryRepository historyRepository;
 
     @Value("${app.extension.custom-limit}")
     private int customLimit;
@@ -36,6 +39,8 @@ public class ExtensionService {
             defaultExtension.restore();
         } else {
             defaultExtension.softDelete();
+            // 삭제 히스토리 저장
+            historyRepository.save(BlockedExtensionHistory.of(defaultExtension));
         }
     }
 
@@ -80,13 +85,15 @@ public class ExtensionService {
 
         ext.softDelete();
         repository.save(ext);
+        // 삭제 히스토리 저장
+        historyRepository.save(BlockedExtensionHistory.of(ext));
     }
 
-    public List<ExtensionDto> getCustomExtensions() {
+    public List<String> getCustomExtensions() {
         List<BlockedExtension> customExtensions = repository.findCustoms(ExtensionType.DEFAULT.getExtensions());
 
         return customExtensions.stream()
-                .map(e -> new ExtensionDto(e.getExtension().toLowerCase(), !e.isDeleted()))
+                .map(e -> e.getExtension().toLowerCase())
                 .toList();
     }
 
