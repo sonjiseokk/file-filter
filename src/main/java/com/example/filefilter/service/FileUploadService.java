@@ -35,6 +35,13 @@ public class FileUploadService {
             throw new FileUploadException(name, extension, "허용되지 않은 파일 형식입니다.");
         }
 
+        // 확장자가 없이 업로드 되는 경우
+        if (extension.isEmpty()) {
+            if (extensionService.isBlocked(name)) {
+                throw new FileUploadException(name, name, "허용되지 않은 파일 형식입니다.");
+            }
+        }
+
         if (!extension.equalsIgnoreCase(fullExtension)
                 && extensionService.isBlocked(fullExtension)) {
             throw new FileUploadException(name, fullExtension, "허용되지 않은 파일 형식입니다.");
